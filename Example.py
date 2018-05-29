@@ -9,8 +9,7 @@ def eventHandler(peerId, channel, variableName, value):
 
 hg = Homegear("/var/run/homegear/homegearIPC.sock", eventHandler);
 
-while(not hg.connected()):
-	time.sleep(1);
+# hg waits until the connection is established (but for a maximum of 2 seonds).
 
 print(hg.logLevel());
 print(hg.listDevices());

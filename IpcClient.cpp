@@ -41,6 +41,7 @@ IpcClient::~IpcClient()
 
 void IpcClient::onConnect()
 {
+    if(_onConnect) _onConnect();
 }
 
 // {{{ RPC methods

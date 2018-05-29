@@ -34,6 +34,8 @@
 
 std::shared_ptr<IpcClient> _ipcClient;
 static PyObject* _eventCallback = nullptr;
+static std::mutex _onConnectWaitMutex;
+static std::condition_variable _onConnectConditionVariable;
 
 typedef struct
 {
@@ -192,6 +194,13 @@ static PyObject* HomegearRpcMethod_call(PyObject* object, PyObject* args, PyObje
     return PythonVariableConverter::getPythonVariable(result);
 }
 
+static void Homegear_onConnect()
+{
+    std::unique_lock<std::mutex> waitLock(_onConnectWaitMutex);
+    waitLock.unlock();
+    _onConnectConditionVariable.notify_all();
+}
+
 static void Homegear_broadcastEvent(uint64_t peerId, int32_t channel, std::string& variableName, Ipc::PVariable value)
 {
     if(!_eventCallback) return;
@@ -258,7 +267,15 @@ static int Homegear_init(HomegearObject* self, PyObject* arg)
     {
         _ipcClient = std::make_shared<IpcClient>(self->socketPath);
         if(_eventCallback) _ipcClient->setBroadcastEvent(std::function<void(uint64_t, int32_t, std::string&, Ipc::PVariable)>(std::bind(&Homegear_broadcastEvent, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
+        _ipcClient->setOnConnect(std::function<void(void)>(std::bind(&Homegear_onConnect)));
         _ipcClient->start();
+        std::unique_lock<std::mutex> waitLock(_onConnectWaitMutex);
+        int64_t startTime = Ipc::HelperFunctions::getTime();
+        while (!_onConnectConditionVariable.wait_for(waitLock, std::chrono::milliseconds(2000), [&]
+        {
+            if(Ipc::HelperFunctions::getTime() - startTime > 2000) return true;
+            else return _ipcClient->connected();
+        }));
     }
 
     return 0;

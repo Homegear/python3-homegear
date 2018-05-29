@@ -45,8 +45,10 @@ public:
     IpcClient(std::string socketPath);
     virtual ~IpcClient();
 
+    void setOnConnect(std::function<void(void)> value) { _onConnect.swap(value); }
     void setBroadcastEvent(std::function<void(uint64_t peerId, int32_t channel, std::string& variableName, Ipc::PVariable value)> value) { _broadcastEvent.swap(value); }
 private:
+    std::function<void(void)> _onConnect;
     std::function<void(uint64_t peerId, int32_t channel, std::string& variableName, Ipc::PVariable value)> _broadcastEvent;
 
     virtual void onConnect();

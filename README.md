@@ -19,9 +19,13 @@ To compile and install the extension manually, execute
 sudo python3 setup.py install
 ```
 
+## Methods
+
+There is only one object available: `Homegear`. It takes two parameters in it's constructor: The path to the Homegear IPC socket (`/var/run/homegear/homegearIPC.sock` by default) and a callback method. The callback method is executed when a device variable is updated in Homegear. On instantiation the class waits until it is connected succesfully to Homegear. After 2 seconds it returns even if there is no connection. To check, if the object is still connected, you can call `connected()`. Apart from this method, you can call all RPC methods available in Homegear.
+
 ## Usage example
 
-Basically there is the Homegear object which takes two parameters on instantiation: The path to the Homegear IPC socket (`/var/run/homegear/homegearIPC.sock` by default) and a callback method. The callback method is executed when a device variable is updated in Homegear. A minimal example:
+A minimal example:
 
 ```
 from homegear import Homegear
