@@ -48,6 +48,6 @@ See Examply.py for a full example.
 
 ## Links
 
-[Homegear Website](https://homegear.eu)
-[Homegear Reference](https://ref.homegear.eu)
-[Homegear Documentation](https://doc.homegear.eu)
+* [Homegear Website](https://homegear.eu)
+* [Homegear Reference](https://ref.homegear.eu)
+* [Homegear Documentation](https://doc.homegear.eu)
