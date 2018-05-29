@@ -6,7 +6,7 @@ setup(
 	author="Homegear GmbH",
 	author_email="contact@homegear.email",
 	url="https://github.com/Homegear/libhomegear-python",
-	download_url = 'https://github.com/Homegear/libhomegear-python/archive/master.tar.gz',
+	download_url = 'https://github.com/Homegear/libhomegear-python/archive/1.0.tar.gz',
 	keywords = ['homegear', 'smart home'],
 	ext_modules=[
 		Extension("homegear", ["homegear.cpp", "IpcClient.cpp", "PythonVariableConverter.cpp"],
