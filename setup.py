@@ -6,14 +6,14 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
 	name="homegear",
-	version="1.0.3",
+	version="1.0.4",
 	description = 'Extension to connect to a local Homegear service.',
 	long_description=long_description,
 	long_description_content_type="text/markdown",
 	author="Homegear GmbH",
 	author_email="contact@homegear.email",
 	url="https://github.com/Homegear/libhomegear-python",
-	download_url = 'https://github.com/Homegear/libhomegear-python/archive/1.0.3.tar.gz',
+	download_url = 'https://github.com/Homegear/libhomegear-python/archive/1.0.4.tar.gz',
 	keywords = ['homegear', 'smart home'],
 	ext_modules=[
 		Extension("homegear", ["homegear.cpp", "IpcClient.cpp", "PythonVariableConverter.cpp"],
