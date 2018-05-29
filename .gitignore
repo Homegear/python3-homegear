@@ -86,3 +86,5 @@ cmake-build-debug
 
 #Python setup
 build/
+homegear.egg-info
+dist/
