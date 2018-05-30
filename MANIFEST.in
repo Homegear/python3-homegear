@@ -1,0 +1,2 @@
+include IpcClient.h
+include PythonVariableConverter.h
