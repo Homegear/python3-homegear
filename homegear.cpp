@@ -163,7 +163,7 @@ static PyObject* HomegearRpcMethod_new(PyTypeObject* type, PyObject* arg, PyObje
 
     auto self = (HomegearRpcMethod*)type->tp_alloc(type, 0);
     if(!self) return nullptr;
-    Py_INCREF(self);
+    //Py_INCREF(self); //valgrind does not complain if we don't do this and the dealloc is only called after setting the object to "None".
     self->methodName = new std::string(methodName);
 
     return (PyObject*)self;
@@ -203,6 +203,7 @@ static PyObject* HomegearRpcMethod_call(PyObject* object, PyObject* args, PyObje
         PyErr_SetString(PyExc_Exception, result->structValue->at("faultString")->stringValue.c_str());
         return nullptr;
     }
+
     return PythonVariableConverter::getPythonVariable(result);
 }
 
@@ -268,7 +269,7 @@ static PyObject* Homegear_new(PyTypeObject* type, PyObject* arg, PyObject* kw)
 
     auto self = (HomegearObject*)type->tp_alloc(type, 0);
     if(!self) return nullptr;
-    Py_INCREF(self);
+    //Py_INCREF(self); //valgrind does not complain if we don't do this and the dealloc is only called after setting the object to "None".
 
     self->socketPath = new std::string(socketPath);
 
@@ -318,7 +319,7 @@ static PyObject* Homegear_call(PyObject* object, PyObject* attrName)
 
     auto homegearMethodObject = (HomegearRpcMethod*)HomegearRpcMethodType.tp_alloc(&HomegearRpcMethodType, 0);
     if(!homegearMethodObject) return nullptr;
-    Py_INCREF(homegearMethodObject);
+    //Py_INCREF(homegearMethodObject); //valgrind does not complain if we don't do this and the dealloc is only called after setting the object to "None".
 
     homegearMethodObject->methodName = new std::string(methodName, methodNameSize);
 
