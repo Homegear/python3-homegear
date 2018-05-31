@@ -5,10 +5,18 @@ libhomegear-python is a python extension to connect to Homegear over Unix Domain
 
 ## Prerequisites
 
-The extension requires `libhomegear-ipc` to be installed and it needs at least Python version 3.5. To install it, add the Homegear APT repository for your distribution (see https://homegear.eu/downloads.html) and execute
+The extension requires `libhomegear-ipc` to be installed and it needs at least Python version 3. To install it, add the Homegear APT repository for your distribution (see https://homegear.eu/downloads.html) and execute
 
 ```bash
 apt install libhomegear-ipc
+```
+
+Alternatively on non Debian-like systems you can compile libhomegear-ipc manually:
+
+```bash
+git clone https://github.com/Homegear/libhomegear-ipc
+cd libhomegear-ipc
+./makeRelease.sh
 ```
 
 ## Setup
@@ -27,7 +35,7 @@ sudo python3 setup.py install
 
 ## Methods
 
-There is only one object available: `Homegear`. It takes two parameters in it's constructor: The path to the Homegear IPC socket (`/var/run/homegear/homegearIPC.sock` by default) and a callback method. The callback method is executed when a device variable is updated in Homegear. On instantiation the class waits until it is connected succesfully to Homegear. After 2 seconds it returns even if there is no connection. To check, if the object is still connected, you can call `connected()`. Apart from this method, you can call all RPC methods available in Homegear.
+There is only one object available: `Homegear`. It takes two parameters in it's constructor: The path to the Homegear IPC socket (normally `/var/run/homegear/homegearIPC.sock`) and a callback method. The callback method is executed when a device variable is updated in Homegear. On instantiation the class waits until it is connected succesfully to Homegear. After 2 seconds it returns even if there is no connection. To check, if the object is still connected, you can call `connected()`. Apart from this method, you can call all RPC methods available in Homegear.
 
 ## Type conversion
 
@@ -121,3 +129,4 @@ while(hg.connected()):
 * [Homegear Website](https://homegear.eu)
 * [Homegear Reference](https://ref.homegear.eu)
 * [Homegear Documentation](https://doc.homegear.eu)
+
