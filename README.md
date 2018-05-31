@@ -5,7 +5,7 @@ libhomegear-python is a python extension to connect to Homegear over Unix Domain
 
 ## Prerequisites
 
-The extension requires `libhomegear-ipc` to be installed. To install it, add the Homegear APT repository for your distribution (see https://homegear.eu/downloads.html) and execute
+The extension requires `libhomegear-ipc` to be installed and it needs at least Python version 3.5. To install it, add the Homegear APT repository for your distribution (see https://homegear.eu/downloads.html) and execute
 
 ```bash
 apt install libhomegear-ipc
@@ -13,7 +13,13 @@ apt install libhomegear-ipc
 
 ## Setup
 
-To compile and install the extension manually, execute
+if you have pip, just do:
+
+```bash
+sudo python3 -m pip install homegear
+```
+
+To compile and install the extension manually, download it from GibHut and execute
 
 ```bash
 sudo python3 setup.py install
