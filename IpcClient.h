@@ -31,7 +31,6 @@
 #ifndef IPCCLIENT_H_
 #define IPCCLIENT_H_
 
-#include <homegear-base/BaseLib.h>
 #include <homegear-ipc/IIpcClient.h>
 
 #include <thread>

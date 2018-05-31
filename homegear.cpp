@@ -32,7 +32,7 @@
 #include "IpcClient.h"
 #include "PythonVariableConverter.h"
 
-std::shared_ptr<IpcClient> _ipcClient;
+static std::shared_ptr<IpcClient> _ipcClient;
 static PyObject* _eventCallback = nullptr;
 static std::mutex _onConnectWaitMutex;
 static std::condition_variable _onConnectConditionVariable;
@@ -40,7 +40,7 @@ static std::condition_variable _onConnectConditionVariable;
 typedef struct
 {
     PyObject_HEAD
-    std::string socketPath;
+    std::string* socketPath;
 } HomegearObject;
 
 static PyObject* Homegear_call(PyObject* object, PyObject* attrName);
@@ -97,10 +97,11 @@ static PyTypeObject HomegearObjectType = {
 typedef struct
 {
     PyObject_HEAD
-    std::string methodName;
+    std::string* methodName;
 } HomegearRpcMethod;
 
 static PyObject* HomegearRpcMethod_call(PyObject* object, PyObject* args, PyObject* kw);
+static void HomegearRpcMethod_dealloc(HomegearRpcMethod* self);
 static PyObject* HomegearRpcMethod_new(PyTypeObject* type, PyObject* arg, PyObject* kw);
 
 static PyTypeObject HomegearRpcMethodType = {
@@ -108,7 +109,7 @@ static PyTypeObject HomegearRpcMethodType = {
         "homegear.HomegearRpcMethod",  // tp_name (module name, object name)
         sizeof(HomegearRpcMethodType),       // tp_basicsize
         0,                           // tp_itemsize
-        nullptr, // tp_dealloc
+        (destructor)HomegearRpcMethod_dealloc, // tp_dealloc
         nullptr,                           // tp_print
         nullptr,                           // tp_getattr
         nullptr,                           // tp_setattr
@@ -158,19 +159,30 @@ static PyObject* HomegearRpcMethod_new(PyTypeObject* type, PyObject* arg, PyObje
             return nullptr;
     }
 
+    if(!methodName) return nullptr;
+
     auto self = (HomegearRpcMethod*)type->tp_alloc(type, 0);
     if(!self) return nullptr;
     Py_INCREF(self);
-    self->methodName = std::string(methodName);
+    self->methodName = new std::string(methodName);
 
     return (PyObject*)self;
+}
+
+static void HomegearRpcMethod_dealloc(HomegearRpcMethod* self)
+{
+	if(self->methodName)
+	{
+		delete self->methodName;
+		self->methodName = nullptr;
+	}
 }
 
 static PyObject* HomegearRpcMethod_call(PyObject* object, PyObject* args, PyObject* kw)
 {
     if(!_ipcClient) { Py_RETURN_NONE; }
 
-    if(((HomegearRpcMethod*)object)->methodName == "connected")
+    if(*(((HomegearRpcMethod*)object)->methodName) == "connected")
     {
         if(_ipcClient && _ipcClient->connected())
         {
@@ -185,7 +197,7 @@ static PyObject* HomegearRpcMethod_call(PyObject* object, PyObject* args, PyObje
     if(!_ipcClient->connected()) Py_RETURN_NONE;
 
     auto parameters = PythonVariableConverter::getVariable(args);
-    auto result = _ipcClient->invoke(((HomegearRpcMethod*)object)->methodName, parameters->arrayValue);
+    auto result = _ipcClient->invoke(*(((HomegearRpcMethod*)object)->methodName), parameters->arrayValue);
     if(result->errorStruct)
     {
         PyErr_SetString(PyExc_Exception, result->structValue->at("faultString")->stringValue.c_str());
@@ -252,11 +264,13 @@ static PyObject* Homegear_new(PyTypeObject* type, PyObject* arg, PyObject* kw)
             return nullptr;
     }
 
+    if(!socketPath) return nullptr;
+
     auto self = (HomegearObject*)type->tp_alloc(type, 0);
     if(!self) return nullptr;
     Py_INCREF(self);
 
-    self->socketPath = std::string(socketPath);
+    self->socketPath = new std::string(socketPath);
 
     return (PyObject*)self;
 }
@@ -265,7 +279,7 @@ static int Homegear_init(HomegearObject* self, PyObject* arg)
 {
     if(!_ipcClient)
     {
-        _ipcClient = std::make_shared<IpcClient>(self->socketPath);
+        _ipcClient = std::make_shared<IpcClient>(*(self->socketPath));
         if(_eventCallback) _ipcClient->setBroadcastEvent(std::function<void(uint64_t, int32_t, std::string&, Ipc::PVariable)>(std::bind(&Homegear_broadcastEvent, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
         _ipcClient->setOnConnect(std::function<void(void)>(std::bind(&Homegear_onConnect)));
         _ipcClient->start();
@@ -283,6 +297,11 @@ static int Homegear_init(HomegearObject* self, PyObject* arg)
 
 static void Homegear_dealloc(HomegearObject* self)
 {
+	if(self->socketPath)
+	{
+		delete self->socketPath;
+		self->socketPath = nullptr;
+	}
 }
 
 static PyObject* Homegear_call(PyObject* object, PyObject* attrName)
@@ -301,7 +320,7 @@ static PyObject* Homegear_call(PyObject* object, PyObject* attrName)
     if(!homegearMethodObject) return nullptr;
     Py_INCREF(homegearMethodObject);
 
-    homegearMethodObject->methodName = std::string(methodName, methodNameSize);
+    homegearMethodObject->methodName = new std::string(methodName, methodNameSize);
 
     return (PyObject*)homegearMethodObject;
 }
