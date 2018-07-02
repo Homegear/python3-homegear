@@ -5,7 +5,7 @@ libhomegear-python is a python extension to connect to Homegear over Unix Domain
 
 ## Prerequisites
 
-The extension requires `libhomegear-ipc` to be installed. To install it, add the Homegear APT repository for your distribution (see https://homegear.eu/downloads.html) and execute
+The extension requires `libhomegear-ipc` to be installed and it needs at least Python version 3.5. To install it, add the Homegear APT repository for your distribution (see https://homegear.eu/downloads.html) and execute
 
 ```bash
 apt install libhomegear-ipc
@@ -13,7 +13,13 @@ apt install libhomegear-ipc
 
 ## Setup
 
-To compile and install the extension manually, execute
+if you have pip, just do:
+
+```bash
+sudo python3 -m pip install homegear
+```
+
+To compile and install the extension manually, download it from GibHut and execute
 
 ```bash
 sudo python3 setup.py install
@@ -60,10 +66,10 @@ A minimal example:
 from homegear import Homegear
 
 # This callback method is called on Homegear variable changes
-def eventHandler(peerId, channel, variableName, value):
+def eventHandler(eventSource, peerId, channel, variableName, value):
 	# Note that the event handler is called by a different thread than the main thread. I. e. thread synchronization is
 	# needed when you access non local variables.
-	print("Event handler called with arguments: peerId: " + str(peerId) + "; channel: " + str(channel) + "; variable name: " + variableName + "; value: " + str(value));
+	print("Event handler called with arguments: source: " + eventSource + " peerId: " + str(peerId) + "; channel: " + str(channel) + "; variable name: " + variableName + "; value: " + str(value));
 
 hg = Homegear("/var/run/homegear/homegearIPC.sock", eventHandler);
 ```
@@ -84,10 +90,10 @@ import time
 from homegear import Homegear
 
 # This callback method is called on Homegear variable changes
-def eventHandler(peerId, channel, variableName, value):
+def eventHandler(eventSource, peerId, channel, variableName, value):
 	# Note that the event handler is called by a different thread than the main thread. I. e. thread synchronization is
 	# needed when you access non local variables.
-	print("Event handler called with arguments: peerId: " + str(peerId) + "; channel: " + str(channel) + "; variable name: " + variableName + "; value: " + str(value));
+	print("Event handler called with arguments: source: " + eventSource + " peerId: " + str(peerId) + "; channel: " + str(channel) + "; variable name: " + variableName + "; value: " + str(value));
 
 hg = Homegear("/var/run/homegear/homegearIPC.sock", eventHandler);
 

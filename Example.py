@@ -7,7 +7,7 @@ def eventHandler(peerId, channel, variableName, value):
 	# needed when you access non local variables.
 	print("Event handler called with arguments: peerId: " + str(peerId) + "; channel: " + str(channel) + "; variable name: " + variableName + "; value: " + str(value));
 
-hg = Homegear("/var/run/homegear/homegearIPC.sock", eventHandler);
+hg = Homegear("/var/lib/homegear/homegearIPC.sock", eventHandler);
 
 # hg waits until the connection is established (but for a maximum of 2 seonds).
 

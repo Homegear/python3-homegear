@@ -201,14 +201,14 @@ static void Homegear_onConnect()
     _onConnectConditionVariable.notify_all();
 }
 
-static void Homegear_broadcastEvent(uint64_t peerId, int32_t channel, std::string& variableName, Ipc::PVariable value)
+static void Homegear_broadcastEvent(std::string& eventSource, uint64_t peerId, int32_t channel, std::string& variableName, Ipc::PVariable value)
 {
     if(!_eventCallback) return;
     PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
     PyObject* pythonValue = PythonVariableConverter::getPythonVariable(value);
     if(pythonValue == nullptr) return;
-    PyObject* arglist = Py_BuildValue("(KisO)", (unsigned long long)peerId, (int)channel, variableName.c_str(), pythonValue);
+    PyObject* arglist = Py_BuildValue("(sKisO)", eventSource, (unsigned long long)peerId, (int)channel, variableName.c_str(), pythonValue);
     if(arglist == nullptr)
     {
         Py_DECREF(pythonValue);
