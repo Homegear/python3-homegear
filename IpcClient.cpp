@@ -51,7 +51,7 @@ Ipc::PVariable IpcClient::broadcastEvent(Ipc::PArray& parameters)
 
     for(uint32_t i = 0; i < parameters->at(3)->arrayValue->size(); ++i)
     {
-        if(_broadcastEvent) _broadcastEvent((uint64_t)parameters->at(1)->integerValue64, parameters->at(2)->integerValue, parameters->at(3)->arrayValue->at(i)->stringValue, parameters->at(4)->arrayValue->at(i));
+        if(_broadcastEvent) _broadcastEvent(parameters->at(0)->stringValue, (uint64_t)parameters->at(1)->integerValue64, parameters->at(2)->integerValue, parameters->at(3)->arrayValue->at(i)->stringValue, parameters->at(4)->arrayValue->at(i));
     }
 
     return std::make_shared<Ipc::Variable>();
