@@ -221,7 +221,7 @@ static void Homegear_broadcastEvent(std::string& eventSource, uint64_t peerId, i
     gstate = PyGILState_Ensure();
     PyObject* pythonValue = PythonVariableConverter::getPythonVariable(value);
     if(pythonValue == nullptr) return;
-    PyObject* arglist = Py_BuildValue("(sKisO)", eventSource, (unsigned long long)peerId, (int)channel, variableName.c_str(), pythonValue);
+    PyObject* arglist = Py_BuildValue("(sKisO)", eventSource.c_str(), (unsigned long long)peerId, (int)channel, variableName.c_str(), pythonValue);
     if(arglist == nullptr)
     {
         Py_DECREF(pythonValue);
