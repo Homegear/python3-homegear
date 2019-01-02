@@ -78,10 +78,10 @@ A minimal example:
 from homegear import Homegear
 
 # This callback method is called on Homegear variable changes
-def eventHandler(peerId, channel, variableName, value):
+def eventHandler(eventSource, peerId, channel, variableName, value):
 	# Note that the event handler is called by a different thread than the main thread. I. e. thread synchronization is
 	# needed when you access non local variables.
-	print("Event handler called with arguments: peerId: " + str(peerId) + "; channel: " + str(channel) + "; variable name: " + variableName + "; value: " + str(value));
+	print("Event handler called with arguments: source: " + eventSource + " peerId: " + str(peerId) + "; channel: " + str(channel) + "; variable name: " + variableName + "; value: " + str(value));
 
 hg = Homegear("/var/run/homegear/homegearIPC.sock", eventHandler);
 ```
@@ -102,10 +102,10 @@ import time
 from homegear import Homegear
 
 # This callback method is called on Homegear variable changes
-def eventHandler(peerId, channel, variableName, value):
+def eventHandler(eventSource, peerId, channel, variableName, value):
 	# Note that the event handler is called by a different thread than the main thread. I. e. thread synchronization is
 	# needed when you access non local variables.
-	print("Event handler called with arguments: peerId: " + str(peerId) + "; channel: " + str(channel) + "; variable name: " + variableName + "; value: " + str(value));
+	print("Event handler called with arguments: source: " + eventSource + " peerId: " + str(peerId) + "; channel: " + str(channel) + "; variable name: " + variableName + "; value: " + str(value));
 
 hg = Homegear("/var/run/homegear/homegearIPC.sock", eventHandler);
 

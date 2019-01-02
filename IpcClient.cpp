@@ -47,11 +47,11 @@ void IpcClient::onConnect()
 // {{{ RPC methods
 Ipc::PVariable IpcClient::broadcastEvent(Ipc::PArray& parameters)
 {
-    if(parameters->size() != 4) return Ipc::Variable::createError(-1, "Wrong parameter count.");
+    if(parameters->size() != 5) return Ipc::Variable::createError(-1, "Wrong parameter count.");
 
-    for(uint32_t i = 0; i < parameters->at(2)->arrayValue->size(); ++i)
+    for(uint32_t i = 0; i < parameters->at(3)->arrayValue->size(); ++i)
     {
-        if(_broadcastEvent) _broadcastEvent((uint64_t)parameters->at(0)->integerValue64, parameters->at(1)->integerValue, parameters->at(2)->arrayValue->at(i)->stringValue, parameters->at(3)->arrayValue->at(i));
+        if(_broadcastEvent) _broadcastEvent(parameters->at(0)->stringValue, (uint64_t)parameters->at(1)->integerValue64, parameters->at(2)->integerValue, parameters->at(3)->arrayValue->at(i)->stringValue, parameters->at(4)->arrayValue->at(i));
     }
 
     return std::make_shared<Ipc::Variable>();

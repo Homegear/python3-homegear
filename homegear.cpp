@@ -214,14 +214,14 @@ static void Homegear_onConnect()
     _onConnectConditionVariable.notify_all();
 }
 
-static void Homegear_broadcastEvent(uint64_t peerId, int32_t channel, std::string& variableName, Ipc::PVariable value)
+static void Homegear_broadcastEvent(std::string& eventSource, uint64_t peerId, int32_t channel, std::string& variableName, Ipc::PVariable value)
 {
     if(!_eventCallback) return;
     PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
     PyObject* pythonValue = PythonVariableConverter::getPythonVariable(value);
     if(pythonValue == nullptr) return;
-    PyObject* arglist = Py_BuildValue("(KisO)", (unsigned long long)peerId, (int)channel, variableName.c_str(), pythonValue);
+    PyObject* arglist = Py_BuildValue("(sKisO)", eventSource.c_str(), (unsigned long long)peerId, (int)channel, variableName.c_str(), pythonValue);
     if(arglist == nullptr)
     {
         Py_DECREF(pythonValue);
@@ -281,7 +281,7 @@ static int Homegear_init(HomegearObject* self, PyObject* arg)
     if(!_ipcClient)
     {
         _ipcClient = std::make_shared<IpcClient>(*(self->socketPath));
-        if(_eventCallback) _ipcClient->setBroadcastEvent(std::function<void(uint64_t, int32_t, std::string&, Ipc::PVariable)>(std::bind(&Homegear_broadcastEvent, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
+        if(_eventCallback) _ipcClient->setBroadcastEvent(std::function<void(std::string&, uint64_t, int32_t, std::string&, Ipc::PVariable)>(std::bind(&Homegear_broadcastEvent, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5)));
         _ipcClient->setOnConnect(std::function<void(void)>(std::bind(&Homegear_onConnect)));
         _ipcClient->start();
         std::unique_lock<std::mutex> waitLock(_onConnectWaitMutex);

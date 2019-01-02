@@ -10,7 +10,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
 	name="homegear",
-	version="1.0.10",
+	version="1.0.12",
 	description = 'Extension to connect to a local Homegear service.',
 	long_description=long_description,
 	long_description_content_type="text/markdown",
