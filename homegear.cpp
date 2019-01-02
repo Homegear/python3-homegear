@@ -314,7 +314,7 @@ static PyObject* Homegear_call(PyObject* object, PyObject* attrName)
     }
 
     Py_ssize_t methodNameSize = 0;
-    char* methodName = PyUnicode_AsUTF8AndSize(attrName, &methodNameSize);
+    const char* methodName = PyUnicode_AsUTF8AndSize(attrName, &methodNameSize);
     if(!methodName) return nullptr;
 
     auto homegearMethodObject = (HomegearRpcMethod*)HomegearRpcMethodType.tp_alloc(&HomegearRpcMethodType, 0);
