@@ -76,7 +76,7 @@ Ipc::PVariable PythonVariableConverter::getVariable(PyObject* value)
     else if(PyUnicode_Check(value))
     {
         Py_ssize_t stringSize = 0;
-        char* utf8String = PyUnicode_AsUTF8AndSize(value, &stringSize); //From the documentation: "The caller is not responsible for deallocating the buffer."
+        const char* utf8String = PyUnicode_AsUTF8AndSize(value, &stringSize); //From the documentation: "The caller is not responsible for deallocating the buffer."
         if(utf8String) variable = std::make_shared<Ipc::Variable>(std::string(utf8String, stringSize));
         else variable = std::make_shared<Ipc::Variable>(Ipc::VariableType::tString);
     }
