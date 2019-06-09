@@ -95,7 +95,7 @@ Ipc::PVariable PythonVariableConverter::getVariable(PyObject* value)
     return variable;
 }
 
-PyObject* PythonVariableConverter::getPythonVariable(Ipc::PVariable& input)
+PyObject* PythonVariableConverter::getPythonVariable(const Ipc::PVariable& input)
 {
     PyObject* output = nullptr;
     if(!input) return output;

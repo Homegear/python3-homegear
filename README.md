@@ -1,7 +1,7 @@
-libhomegear-python
-==================
+python3-homegear
+================
 
-libhomegear-python is a python extension to connect to Homegear over Unix Domain Sockets. It supports all of Homegear's RPC methods and live event reception.
+python3-homegear is a python extension to connect to Homegear over Unix Domain Sockets. It supports all of Homegear's RPC methods and live event reception.
 
 ## Prerequisites
 
@@ -129,7 +129,7 @@ while(hg.connected()):
 
 ## Links
 
-* [GitHub Project](https://github.com/Homegear/libhomegear-python)
+* [GitHub Project](https://github.com/Homegear/python3-homegear)
 * [Homegear Website](https://homegear.eu)
 * [Homegear Reference](https://ref.homegear.eu)
 * [Homegear Documentation](https://doc.homegear.eu)

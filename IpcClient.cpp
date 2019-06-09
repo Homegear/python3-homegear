@@ -33,6 +33,8 @@
 IpcClient::IpcClient(std::string socketPath) : IIpcClient(socketPath)
 {
     Ipc::Output::setLogLevel(-1);
+
+    _localRpcMethods.emplace("nodeInput", std::bind(&IpcClient::nodeInput, this, std::placeholders::_1));
 }
 
 IpcClient::~IpcClient()
@@ -53,6 +55,17 @@ Ipc::PVariable IpcClient::broadcastEvent(Ipc::PArray& parameters)
     {
         if(_broadcastEvent) _broadcastEvent(parameters->at(0)->stringValue, (uint64_t)parameters->at(1)->integerValue64, parameters->at(2)->integerValue, parameters->at(3)->arrayValue->at(i)->stringValue, parameters->at(4)->arrayValue->at(i));
     }
+
+    return std::make_shared<Ipc::Variable>();
+}
+// }}}
+
+// {{{ RPC methods when used in a Node-BLUE node
+Ipc::PVariable IpcClient::nodeInput(Ipc::PArray& parameters)
+{
+    if(parameters->size() != 3) return Ipc::Variable::createError(-1, "Wrong parameter count.");
+
+    if(_nodeInput) _nodeInput(parameters->at(0), parameters->at(1)->integerValue64, parameters->at(2));
 
     return std::make_shared<Ipc::Variable>();
 }

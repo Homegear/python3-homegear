@@ -40,7 +40,7 @@ public:
     virtual ~PythonVariableConverter() = default;
 
     static Ipc::PVariable getVariable(PyObject* value);
-    static PyObject* getPythonVariable(Ipc::PVariable& input);
+    static PyObject* getPythonVariable(const Ipc::PVariable& input);
 private:
     PythonVariableConverter() = default;
 };
