@@ -88,3 +88,4 @@ cmake-build-debug
 build/
 homegear.egg-info
 dist/
+python3-homegear*

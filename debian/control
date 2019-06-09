@@ -1,0 +1,21 @@
+Source: python3-homegear
+Maintainer: Sathya Laufer <sathya@laufers.net>
+Section: misc
+Priority: optional
+Standards-Version: 3.9.6
+Build-Depends: debhelper (>= 11~), dh-python, python3-all, python3-setuptools
+Homepage: https://homegear.eu
+
+Package: python3-homegear
+Architecture: any
+Depends: ${python3:Depends}, ${misc:Depends}
+Description: Python module for Homegear
+ Homegear is a program to interface your home automation software 
+ with your smart home devices.
+
+Package: python3-homegear-dbg
+Architecture: any
+Depends: ${python3:Depends}, ${misc:Depends}
+Description: Python module for Homegear
+ Homegear is a program to interface your home automation software 
+ with your smart home devices.

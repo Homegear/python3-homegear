@@ -8,9 +8,12 @@ if sys.version_info < (3,0):
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+version = None
+with open('version.txt') as f: version = f.read().strip()
+
 setuptools.setup(
 	name="homegear",
-	version="1.0.14",
+	version=version,
 	description = 'Extension to connect to a local Homegear service.',
 	long_description=long_description,
 	long_description_content_type="text/markdown",
