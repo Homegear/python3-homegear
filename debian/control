@@ -3,7 +3,7 @@ Maintainer: Sathya Laufer <sathya@laufers.net>
 Section: misc
 Priority: optional
 Standards-Version: 3.9.6
-Build-Depends: debhelper (>= 11~), dh-python, python3-all, python3-setuptools
+Build-Depends: debhelper (>= 8), dh-python, python3-all, python3-setuptools
 Homepage: https://homegear.eu
 
 Package: python3-homegear
