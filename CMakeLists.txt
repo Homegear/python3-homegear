@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
-project(homegear)
+project(python3-homegear)
 
 set(CMAKE_CXX_STANDARD 11)
 
