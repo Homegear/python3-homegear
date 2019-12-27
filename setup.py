@@ -24,7 +24,7 @@ setuptools.setup(
 	ext_modules=[
 		Extension("homegear", ["homegear.cpp", "IpcClient.cpp", "PythonVariableConverter.cpp"],
 		extra_compile_args=['-std=c++11'],
-		extra_link_args=['-lhomegear-ipc'])
+		extra_link_args=['-lhomegear-ipc -latomic'])
 	],
 	include_package_data=True,
 	classifiers=(
