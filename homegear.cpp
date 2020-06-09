@@ -33,6 +33,10 @@
 #include "PythonVariableConverter.h"
 #include <unordered_set>
 
+#if PY_MAJOR_VERSION > 3
+#error "Python version > 3 is not supported."
+#endif
+
 static std::shared_ptr<IpcClient> _ipcClient;
 static PyObject* _eventCallback = nullptr;
 static std::mutex _onConnectWaitMutex;
@@ -65,7 +69,11 @@ static PyTypeObject HomegearObjectType = {
         sizeof(HomegearObject),            // tp_basicsize
         0,                                 // tp_itemsize
         (destructor)Homegear_dealloc,      // tp_dealloc
+#if PY_MINOR_VERSION >= 8
+        0,                                 // tp_vectorcall_offset
+#else
         nullptr,                           // tp_print
+#endif
         nullptr,                           // tp_getattr
         nullptr,                           // tp_setattr
         nullptr,                           // tp_as_async
@@ -99,6 +107,9 @@ static PyTypeObject HomegearObjectType = {
         nullptr,                           // tp_alloc
         Homegear_new,                      // tp_new
         nullptr,                           // tp_free
+#if PY_MINOR_VERSION >= 8
+        nullptr,                           // tp_is_gc
+#endif
 };
 
 typedef struct
@@ -111,13 +122,19 @@ static PyObject* HomegearRpcMethod_call(PyObject* object, PyObject* args, PyObje
 static void HomegearRpcMethod_dealloc(HomegearRpcMethod* self);
 static PyObject* HomegearRpcMethod_new(PyTypeObject* type, PyObject* arg, PyObject* kw);
 
+std::nullptr_t bla;
+
 static PyTypeObject HomegearRpcMethodType = {
         PyVarObject_HEAD_INIT(nullptr, 0)
         "homegear.HomegearRpcMethod",      // tp_name (module name, object name)
         sizeof(HomegearRpcMethodType),     // tp_basicsize
         0,                                 // tp_itemsize
         (destructor)HomegearRpcMethod_dealloc, // tp_dealloc
+#if PY_MINOR_VERSION >= 8
+        0,                                 // tp_vectorcall_offset
+#else
         nullptr,                           // tp_print
+#endif
         nullptr,                           // tp_getattr
         nullptr,                           // tp_setattr
         nullptr,                           // tp_as_async
@@ -151,6 +168,9 @@ static PyTypeObject HomegearRpcMethodType = {
         nullptr,                           // tp_alloc
         HomegearRpcMethod_new,             // tp_new
         nullptr,                           // tp_free
+#if PY_MINOR_VERSION >= 8
+        nullptr,                           // tp_is_gc
+#endif
 };
 
 static PyObject* HomegearRpcMethod_new(PyTypeObject* type, PyObject* arg, PyObject* kw)
