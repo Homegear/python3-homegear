@@ -390,6 +390,7 @@ static int Homegear_init(HomegearObject *self, PyObject *arg) {
 
 static void Homegear_dealloc(HomegearObject *self) {
   _ipcClient->dispose();
+  _ipcClient.reset();
 
   if (self->socketPath) {
     delete self->socketPath;
