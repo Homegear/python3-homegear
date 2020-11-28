@@ -38,29 +38,28 @@
 #include <string>
 #include <set>
 
-class IpcClient : public Ipc::IIpcClient
-{
-public:
-    explicit IpcClient(std::string socketPath);
-    ~IpcClient() override;
+class IpcClient : public Ipc::IIpcClient {
+ public:
+  explicit IpcClient(std::string socketPath);
+  ~IpcClient() override;
 
-    void setOnConnect(std::function<void(void)> value) { _onConnect.swap(value); }
-    void setBroadcastEvent(std::function<void(std::string& eventSource, uint64_t peerId, int32_t channel, std::string& variableName, Ipc::PVariable value)> value) { _broadcastEvent.swap(value); }
-    void setNodeInput(std::function<void(const Ipc::PVariable& nodeInfo, uint32_t inputIndex, const Ipc::PVariable message)> value) { _nodeInput.swap(value); }
-private:
-    std::function<void(void)> _onConnect;
-    std::function<void(std::string& eventSource, uint64_t peerId, int32_t channel, std::string& variableName, Ipc::PVariable value)> _broadcastEvent;
-    std::function<void(const Ipc::PVariable& nodeInfo, uint32_t inputIndex, const Ipc::PVariable message)> _nodeInput;
+  void setOnConnect(std::function<void(void)> value) { _onConnect.swap(value); }
+  void setBroadcastEvent(std::function<void(std::string &eventSource, uint64_t peerId, int32_t channel, std::string &variableName, Ipc::PVariable value)> value) { _broadcastEvent.swap(value); }
+  void setNodeInput(std::function<void(const Ipc::PVariable &nodeInfo, uint32_t inputIndex, const Ipc::PVariable message)> value) { _nodeInput.swap(value); }
+ private:
+  std::function<void(void)> _onConnect;
+  std::function<void(std::string &eventSource, uint64_t peerId, int32_t channel, std::string &variableName, Ipc::PVariable value)> _broadcastEvent;
+  std::function<void(const Ipc::PVariable &nodeInfo, uint32_t inputIndex, const Ipc::PVariable message)> _nodeInput;
 
-    void onConnect() override;
+  void onConnect() override;
 
-    // {{{ RPC methods
-    Ipc::PVariable broadcastEvent(Ipc::PArray& parameters) override;
-    // }}}
+  // {{{ RPC methods
+  Ipc::PVariable broadcastEvent(Ipc::PArray &parameters) override;
+  // }}}
 
-    // {{{ RPC methods when used in a Node-BLUE node
-    Ipc::PVariable nodeInput(Ipc::PArray& parameters);
-    // }}}
+  // {{{ RPC methods when used in a Node-BLUE node
+  Ipc::PVariable nodeInput(Ipc::PArray &parameters);
+  // }}}
 };
 
 #endif
