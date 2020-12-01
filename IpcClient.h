@@ -44,8 +44,11 @@ class IpcClient : public Ipc::IIpcClient {
   ~IpcClient() override;
 
   void setOnConnect(std::function<void(void)> value) { _onConnect.swap(value); }
+  void removeOnConnect() { _onConnect = std::function<void(void)>(); }
   void setBroadcastEvent(std::function<void(std::string &eventSource, uint64_t peerId, int32_t channel, std::string &variableName, Ipc::PVariable value)> value) { _broadcastEvent.swap(value); }
+  void removeBroadcastEvent() { _broadcastEvent = std::function<void(std::string &eventSource, uint64_t peerId, int32_t channel, std::string &variableName, Ipc::PVariable value)>(); }
   void setNodeInput(std::function<void(const Ipc::PVariable &nodeInfo, uint32_t inputIndex, const Ipc::PVariable message)> value) { _nodeInput.swap(value); }
+  void removeNodeInput() { _nodeInput = std::function<void(const Ipc::PVariable &nodeInfo, uint32_t inputIndex, const Ipc::PVariable message)>(); }
  private:
   std::function<void(void)> _onConnect;
   std::function<void(std::string &eventSource, uint64_t peerId, int32_t channel, std::string &variableName, Ipc::PVariable value)> _broadcastEvent;

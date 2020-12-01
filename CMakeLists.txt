@@ -3,7 +3,7 @@ project(python3-homegear)
 
 set(CMAKE_CXX_STANDARD 11)
 
-include_directories(/usr/include/python3.5 /usr/include/python3.6 /usr/include/python3.7)
+include_directories(/usr/include/python3.9 /usr/include/python3.8 /usr/include/python3.7 /usr/include/python3.6 /usr/include/python3.5)
 
 add_library(homegear SHARED
         homegear.cpp
