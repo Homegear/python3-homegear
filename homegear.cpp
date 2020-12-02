@@ -39,17 +39,26 @@
 #error "Python version < 3 is not supported."
 #endif
 
+static const std::unordered_set<std::string> kNodeMethods{
+    "nodeOutput",
+    "setNodeData",
+    "setFlowData",
+    "setGlobalData",
+    "getNodeData",
+    "getFlowData",
+    "getGlobalData"
+};
+
 typedef struct {
   PyObject_HEAD
-  std::string* socketPath = nullptr;
-  IpcClient* ipcClient = nullptr;
+  std::string *socketPath = nullptr;
+  IpcClient *ipcClient = nullptr;
   PyObject *eventCallback = nullptr;
-  std::mutex* onConnectWaitMutex = nullptr;
-  std::condition_variable* onConnectConditionVariable = nullptr;
+  std::mutex *onConnectWaitMutex = nullptr;
+  std::condition_variable *onConnectConditionVariable = nullptr;
 
 // {{{ Variables and methods for use as Node-BLUE node
-  std::string* nodeId = nullptr;
-  std::unordered_set<std::string>* nodeMethods = nullptr;
+  std::string *nodeId = nullptr;
   PyObject *nodeInputCallback = nullptr;
 // }}}
 } HomegearObject;
@@ -78,10 +87,9 @@ static PyTypeObject HomegearObjectType = {
 
 typedef struct {
   PyObject_HEAD
-  std::string* methodName = nullptr;
-  std::string* nodeId = nullptr;
-  IpcClient* ipcClient = nullptr;
-  std::unordered_set<std::string>* nodeMethods = nullptr;
+  std::string *methodName = nullptr;
+  std::string *nodeId = nullptr;
+  IpcClient *ipcClient = nullptr;
 } HomegearRpcMethod;
 
 static PyObject *HomegearRpcMethod_call(PyObject *object, PyObject *args, PyObject *kw);
@@ -117,7 +125,6 @@ static PyObject *HomegearRpcMethod_new(PyTypeObject *type, PyObject *arg, PyObje
   self->methodName = new std::string(methodName);
   self->ipcClient = nullptr;
   self->nodeId = nullptr;
-  self->nodeMethods = nullptr;
 
   return (PyObject *)self;
 }
@@ -134,7 +141,7 @@ static void HomegearRpcMethod_dealloc(HomegearRpcMethod *self) {
 static PyObject *HomegearRpcMethod_call(PyObject *object, PyObject *args, PyObject *kw) {
   auto methodObject = (HomegearRpcMethod *)object;
 
-  if (!methodObject->ipcClient || !methodObject->nodeMethods) {
+  if (!methodObject->ipcClient) {
     Py_RETURN_NONE;
   }
 
@@ -150,8 +157,8 @@ static PyObject *HomegearRpcMethod_call(PyObject *object, PyObject *args, PyObje
 
   auto parameters = PythonVariableConverter::getVariable(args);
 
-  auto nodeMethodIterator = methodObject->nodeMethods->find(*methodObject->methodName);
-  if (nodeMethodIterator != methodObject->nodeMethods->end()) {
+  auto nodeMethodIterator = kNodeMethods.find(*methodObject->methodName);
+  if (nodeMethodIterator != kNodeMethods.end()) {
     if (!methodObject->nodeId || methodObject->nodeId->empty()) {
       PyErr_SetString(PyExc_Exception, "Node ID was not set in Object constructor.");
       return nullptr;
@@ -159,7 +166,7 @@ static PyObject *HomegearRpcMethod_call(PyObject *object, PyObject *args, PyObje
 
     auto newParameters = std::make_shared<Ipc::Array>();
     newParameters->reserve(parameters->arrayValue->size() + 1);
-    newParameters->emplace_back(std::make_shared<Ipc::Variable>(methodObject->nodeId));
+    newParameters->emplace_back(std::make_shared<Ipc::Variable>(*methodObject->nodeId));
     newParameters->insert(newParameters->end(), parameters->arrayValue->begin(), parameters->arrayValue->end());
 
     auto result = methodObject->ipcClient->invoke(*methodObject->methodName, newParameters);
@@ -242,16 +249,21 @@ static PyObject *Homegear_new(PyTypeObject *type, PyObject *arg, PyObject *kw) {
   PyObject *tempNodeInputCallback = nullptr;
 
   switch (PyTuple_Size(arg)) {
-    case 1:if (!PyArg_ParseTuple(arg, "s", &socketPath)) return nullptr;
+    case 1: {
+      if (!PyArg_ParseTuple(arg, "s", &socketPath)) return nullptr;
       break;
-    case 2:if (!PyArg_ParseTuple(arg, "sO:Homegear_new", &socketPath, &tempEventCallback)) return nullptr;
+    }
+    case 2: {
+      if (!PyArg_ParseTuple(arg, "sO:Homegear_new", &socketPath, &tempEventCallback)) return nullptr;
       if (!PyCallable_Check(tempEventCallback)) {
         PyErr_SetString(PyExc_TypeError, "Parameter eventCallback must be callable.");
         return nullptr;
       }
       Py_XINCREF(tempEventCallback);         /* Add a reference to new callback */
       break;
-    case 4:if (!PyArg_ParseTuple(arg, "sOsO:Homegear_new", &socketPath, &tempEventCallback, &nodeId, &tempNodeInputCallback)) return nullptr;
+    }
+    case 4: {
+      if (!PyArg_ParseTuple(arg, "sOsO:Homegear_new", &socketPath, &tempEventCallback, &nodeId, &tempNodeInputCallback)) return nullptr;
       if (!PyCallable_Check(tempEventCallback)) {
         PyErr_SetString(PyExc_TypeError, "Parameter eventCallback must be callable.");
         return nullptr;
@@ -264,7 +276,10 @@ static PyObject *Homegear_new(PyTypeObject *type, PyObject *arg, PyObject *kw) {
       }
       Py_XINCREF(tempNodeInputCallback);         /* Add a reference to new callback */
       break;
-    default:return nullptr;
+    }
+    default: {
+      return nullptr;
+    }
   }
 
   if (!socketPath) return nullptr;
@@ -281,7 +296,6 @@ static PyObject *Homegear_new(PyTypeObject *type, PyObject *arg, PyObject *kw) {
   if (nodeId) self->nodeId = new std::string(nodeId);
   else self->nodeId = new std::string();
 
-  self->nodeMethods = new std::unordered_set<std::string>();
   self->ipcClient = new IpcClient(*self->socketPath);
 
   self->onConnectConditionVariable = new std::condition_variable;
@@ -291,14 +305,6 @@ static PyObject *Homegear_new(PyTypeObject *type, PyObject *arg, PyObject *kw) {
 }
 
 static int Homegear_init(HomegearObject *self, PyObject *arg) {
-  self->nodeMethods->emplace("nodeOutput");
-  self->nodeMethods->emplace("setNodeData");
-  self->nodeMethods->emplace("setFlowData");
-  self->nodeMethods->emplace("setGlobalData");
-  self->nodeMethods->emplace("getNodeData");
-  self->nodeMethods->emplace("getFlowData");
-  self->nodeMethods->emplace("getGlobalData");
-
   if (self->eventCallback) {
     self->ipcClient->setBroadcastEvent(std::function<void(std::string &, uint64_t, int32_t, std::string &, Ipc::PVariable)>(std::bind(&Homegear_broadcastEvent,
                                                                                                                                       self,
@@ -350,11 +356,6 @@ static void Homegear_dealloc(HomegearObject *self) {
     self->nodeId = nullptr;
   }
 
-  if (self->nodeMethods) {
-    delete self->nodeMethods;
-    self->nodeMethods = nullptr;
-  }
-
   if (self->socketPath) {
     delete self->socketPath;
     self->socketPath = nullptr;
@@ -392,7 +393,6 @@ static PyObject *Homegear_call(PyObject *object, PyObject *attrName) {
   homegearMethodObject->methodName = new std::string(methodName, methodNameSize);
   homegearMethodObject->ipcClient = homegearObject->ipcClient;
   homegearMethodObject->nodeId = homegearObject->nodeId;
-  homegearMethodObject->nodeMethods = homegearObject->nodeMethods;
 
   return (PyObject *)homegearMethodObject;
 }
