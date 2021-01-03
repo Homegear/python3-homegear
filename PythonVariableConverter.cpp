@@ -31,7 +31,7 @@
 
 Ipc::PVariable PythonVariableConverter::getVariable(PyObject *value) {
   Ipc::PVariable variable;
-  if (!value) return variable;
+  if (!value) return std::make_shared<Ipc::Variable>();
 
   if (PyTuple_Check(value)) {
     variable = std::make_shared<Ipc::Variable>(Ipc::VariableType::tArray);
@@ -75,6 +75,8 @@ Ipc::PVariable PythonVariableConverter::getVariable(PyObject *value) {
     variable = std::make_shared<Ipc::Variable>(byteArray);
   } else if (value == Py_None) {
     variable = std::make_shared<Ipc::Variable>(Ipc::VariableType::tVoid);
+  } else {
+    variable = std::make_shared<Ipc::Variable>();
   }
 
   return variable;

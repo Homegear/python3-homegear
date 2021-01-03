@@ -72,18 +72,33 @@ static PyMethodDef HomegearMethods[] = {
     {nullptr, nullptr, 0, nullptr}
 };
 
+#if __GNUC__ > 6
 static PyTypeObject HomegearObjectType = {
-    PyVarObject_HEAD_INIT(nullptr, 0)
-    .tp_name = "homegear.Homegear",
-    .tp_basicsize = sizeof(HomegearObject),
-    .tp_dealloc = (destructor)Homegear_dealloc,
-    .tp_getattro = Homegear_call,
-    .tp_flags = Py_TPFLAGS_DEFAULT,
-    .tp_doc = "Class to locally communicate with Homegear.",
-    .tp_methods = HomegearMethods,
-    .tp_init = (initproc)Homegear_init,
-    .tp_new = Homegear_new,
+    .ob_base =  PyVarObject_HEAD_INIT(nullptr, 0)
+    .tp_name =   "homegear.Homegear",
+    .tp_basicsize =  sizeof(HomegearObject),
+    .tp_dealloc =  (destructor)Homegear_dealloc,
+    .tp_getattro =  Homegear_call,
+    .tp_flags =  Py_TPFLAGS_DEFAULT,
+    .tp_doc =  "Class to locally communicate with Homegear.",
+    .tp_methods =  HomegearMethods,
+    .tp_init =  (initproc)Homegear_init,
+    .tp_new =  Homegear_new,
 };
+#else
+static PyTypeObject HomegearObjectType = {
+    ob_base : PyVarObject_HEAD_INIT(nullptr, 0)
+    tp_name :  "homegear.Homegear",
+    tp_basicsize : sizeof(HomegearObject),
+    tp_dealloc : (destructor)Homegear_dealloc,
+    tp_getattro : Homegear_call,
+    tp_flags : Py_TPFLAGS_DEFAULT,
+    tp_doc : "Class to locally communicate with Homegear.",
+    tp_methods : HomegearMethods,
+    tp_init : (initproc)Homegear_init,
+    tp_new : Homegear_new,
+};
+#endif
 
 typedef struct {
   PyObject_HEAD
@@ -98,8 +113,9 @@ static PyObject *HomegearRpcMethod_new(PyTypeObject *type, PyObject *arg, PyObje
 
 std::nullptr_t bla;
 
+#if __GNUC__ > 6
 static PyTypeObject HomegearRpcMethodType = {
-    PyVarObject_HEAD_INIT(nullptr, 0)
+    .ob_base = PyVarObject_HEAD_INIT(nullptr, 0)
     .tp_name = "homegear.HomegearRpcMethod", // (module name, object name)
     .tp_basicsize = sizeof(HomegearRpcMethodType),
     .tp_dealloc = (destructor)HomegearRpcMethod_dealloc,
@@ -107,6 +123,17 @@ static PyTypeObject HomegearRpcMethodType = {
     .tp_flags = Py_TPFLAGS_DEFAULT,
     .tp_new = HomegearRpcMethod_new
 };
+#else
+static PyTypeObject HomegearRpcMethodType = {
+    ob_base : PyVarObject_HEAD_INIT(nullptr, 0)
+    tp_name : "homegear.HomegearRpcMethod", // (module name, object name)
+    tp_basicsize : sizeof(HomegearRpcMethodType),
+    tp_dealloc : (destructor)HomegearRpcMethod_dealloc,
+    tp_call : HomegearRpcMethod_call,
+    tp_flags : Py_TPFLAGS_DEFAULT,
+    tp_new : HomegearRpcMethod_new
+};
+#endif
 
 static PyObject *HomegearRpcMethod_new(PyTypeObject *type, PyObject *arg, PyObject *kw) {
   const char *methodName = nullptr;
