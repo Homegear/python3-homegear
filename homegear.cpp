@@ -149,7 +149,7 @@ static PyObject *HomegearRpcMethod_new(PyTypeObject *type, PyObject *arg, PyObje
 
 std::nullptr_t bla;
 
-#if __GNUC__ > 6
+#if __GNUC__ > 7
 static PyTypeObject HomegearRpcMethodType = {
     .ob_base = PyVarObject_HEAD_INIT(nullptr, 0)
     .tp_name = "homegear.HomegearRpcMethod", // (module name, object name)
