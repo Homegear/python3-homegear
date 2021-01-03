@@ -72,7 +72,7 @@ static PyMethodDef HomegearMethods[] = {
     {nullptr, nullptr, 0, nullptr}
 };
 
-#if __GNUC__ > 6
+#if __GNUC__ > 7
 static PyTypeObject HomegearObjectType = {
     .ob_base =  PyVarObject_HEAD_INIT(nullptr, 0)
     .tp_name =   "homegear.Homegear",
