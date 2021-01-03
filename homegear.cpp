@@ -87,16 +87,52 @@ static PyTypeObject HomegearObjectType = {
 };
 #else
 static PyTypeObject HomegearObjectType = {
-    ob_base : PyVarObject_HEAD_INIT(nullptr, 0)
-    tp_name :  "homegear.Homegear",
-    tp_basicsize : sizeof(HomegearObject),
-    tp_dealloc : (destructor)Homegear_dealloc,
-    tp_getattro : Homegear_call,
-    tp_flags : Py_TPFLAGS_DEFAULT,
-    tp_doc : "Class to locally communicate with Homegear.",
-    tp_methods : HomegearMethods,
-    tp_init : (initproc)Homegear_init,
-    tp_new : Homegear_new,
+        PyVarObject_HEAD_INIT(nullptr, 0)
+        "homegear.Homegear",               // tp_name (module name, object name)
+        sizeof(HomegearObject),            // tp_basicsize
+        0,                                 // tp_itemsize
+        (destructor)Homegear_dealloc,      // tp_dealloc
+#if PY_MINOR_VERSION >= 8
+        0,                                 // tp_vectorcall_offset
+#else
+        nullptr,                           // tp_print
+#endif
+        nullptr,                           // tp_getattr
+        nullptr,                           // tp_setattr
+        nullptr,                           // tp_as_async
+        nullptr,                           // tp_repr
+        nullptr,                           // tp_as_number
+        nullptr,                           // tp_as_sequence
+        nullptr,                           // tp_as_mapping
+        nullptr,                           // tp_hash
+        nullptr,                           // tp_call
+        nullptr,                           // tp_str
+        Homegear_call,                     // tp_getattro
+        nullptr,                           // tp_setattro
+        nullptr,                           // tp_as_buffer
+        Py_TPFLAGS_DEFAULT,                // tp_flags
+        "Class to locally communicate with Homegear.", // tp_doc
+        nullptr,                           // tp_traverse
+        nullptr,                           // tp_clear
+        nullptr,                           // tp_richcompare
+        0,                                 // tp_weaklistoffset
+        nullptr,                           // tp_iter
+        nullptr,                           // tp_iternext
+        HomegearMethods,                   // tp_methods
+        nullptr,                           // tp_members
+        nullptr,                           // tp_getset
+        nullptr,                           // tp_base
+        nullptr,                           // tp_dict
+        nullptr,                           // tp_descr_get
+        nullptr,                           // tp_descr_set
+        0,                                 // tp_dictoffset
+        (initproc)Homegear_init,           // tp_init
+        nullptr,                           // tp_alloc
+        Homegear_new,                      // tp_new
+        nullptr,                           // tp_free
+#if PY_MINOR_VERSION >= 8
+        nullptr,                           // tp_is_gc
+#endif
 };
 #endif
 
@@ -125,13 +161,52 @@ static PyTypeObject HomegearRpcMethodType = {
 };
 #else
 static PyTypeObject HomegearRpcMethodType = {
-    ob_base : PyVarObject_HEAD_INIT(nullptr, 0)
-    tp_name : "homegear.HomegearRpcMethod", // (module name, object name)
-    tp_basicsize : sizeof(HomegearRpcMethodType),
-    tp_dealloc : (destructor)HomegearRpcMethod_dealloc,
-    tp_call : HomegearRpcMethod_call,
-    tp_flags : Py_TPFLAGS_DEFAULT,
-    tp_new : HomegearRpcMethod_new
+        PyVarObject_HEAD_INIT(nullptr, 0)
+        "homegear.HomegearRpcMethod",      // tp_name (module name, object name)
+        sizeof(HomegearRpcMethodType),     // tp_basicsize
+        0,                                 // tp_itemsize
+        (destructor)HomegearRpcMethod_dealloc, // tp_dealloc
+#if PY_MINOR_VERSION >= 8
+        0,                                 // tp_vectorcall_offset
+#else
+        nullptr,                           // tp_print
+#endif
+        nullptr,                           // tp_getattr
+        nullptr,                           // tp_setattr
+        nullptr,                           // tp_as_async
+        nullptr,                           // tp_repr
+        nullptr,                           // tp_as_number
+        nullptr,                           // tp_as_sequence
+        nullptr,                           // tp_as_mapping
+        nullptr,                           // tp_hash
+        HomegearRpcMethod_call,            // tp_call
+        nullptr,                           // tp_str
+        nullptr,                           // tp_getattro
+        nullptr,                           // tp_setattro
+        nullptr,                           // tp_as_buffer
+        Py_TPFLAGS_DEFAULT,                // tp_flags
+        nullptr,                           // tp_doc
+        nullptr,                           // tp_traverse
+        nullptr,                           // tp_clear
+        nullptr,                           // tp_richcompare
+        0,                                 // tp_weaklistoffset
+        nullptr,                           // tp_iter
+        nullptr,                           // tp_iternext
+        nullptr,                           // tp_methods
+        nullptr,                           // tp_members
+        nullptr,                           // tp_getset
+        nullptr,                           // tp_base
+        nullptr,                           // tp_dict
+        nullptr,                           // tp_descr_get
+        nullptr,                           // tp_descr_set
+        0,                                 // tp_dictoffset
+        nullptr,                           // tp_init
+        nullptr,                           // tp_alloc
+        HomegearRpcMethod_new,             // tp_new
+        nullptr,                           // tp_free
+#if PY_MINOR_VERSION >= 8
+        nullptr,                           // tp_is_gc
+#endif
 };
 #endif
 
