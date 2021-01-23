@@ -46,7 +46,9 @@ static const std::unordered_set<std::string> kNodeMethods{
     "setGlobalData",
     "getNodeData",
     "getFlowData",
-    "getGlobalData"
+    "getGlobalData",
+    "getNodeCredentials",
+    "setNodeCredentials"
 };
 
 typedef struct {
