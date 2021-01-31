@@ -40,7 +40,9 @@
 #endif
 
 static const std::unordered_set<std::string> kNodeMethods{
+    "nodeEvent",
     "nodeOutput",
+    "nodeLog",
     "setNodeData",
     "setFlowData",
     "setGlobalData",
