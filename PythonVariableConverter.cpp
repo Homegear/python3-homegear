@@ -122,7 +122,7 @@ PyObject *PythonVariableConverter::getPythonVariable(const Ipc::PVariable &input
   } else if (input->type == Ipc::VariableType::tString || input->type == Ipc::VariableType::tBase64) {
     output = Py_BuildValue("s", input->stringValue.c_str());
   } else if (input->type == Ipc::VariableType::tBinary) {
-    output = Py_BuildValue("y*", (char *)input->binaryValue.data());
+    output = Py_BuildValue("y", (char *)input->binaryValue.data());
   } else {
     output = Py_BuildValue("s", "UNKNOWN");
   }
