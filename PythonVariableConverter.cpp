@@ -76,7 +76,7 @@ Ipc::PVariable PythonVariableConverter::getVariable(PyObject *value) {
   } else if (PyByteArray_Check(value)) {
     char *rawByteArray = PyByteArray_AsString(value);
     std::vector<char> byteArray;
-    if (rawByteArray) byteArray = std::vector<char>(rawByteArray, rawByteArray + PyBytes_Size(value));
+    if (rawByteArray) byteArray = std::vector<char>(rawByteArray, rawByteArray + PyByteArray_Size(value));
     variable = std::make_shared<Ipc::Variable>(byteArray);
   } else if (value == Py_None) {
     variable = std::make_shared<Ipc::Variable>(Ipc::VariableType::tVoid);
