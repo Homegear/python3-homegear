@@ -1,2 +1,4 @@
 include IpcClient.h
 include PythonVariableConverter.h
+include version.txt
+include revision.txt

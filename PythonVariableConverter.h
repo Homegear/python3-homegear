@@ -34,15 +34,12 @@
 #include <homegear-ipc/Variable.h>
 #include <Python.h>
 
-class PythonVariableConverter
-{
-public:
-    virtual ~PythonVariableConverter() = default;
+class PythonVariableConverter {
+ public:
+  PythonVariableConverter() = delete;
 
-    static Ipc::PVariable getVariable(PyObject* value);
-    static PyObject* getPythonVariable(const Ipc::PVariable& input);
-private:
-    PythonVariableConverter() = default;
+  static Ipc::PVariable getVariable(PyObject *value);
+  static PyObject *getPythonVariable(const Ipc::PVariable &input);
 };
 
 #endif
