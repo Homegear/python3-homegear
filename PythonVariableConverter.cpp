@@ -29,141 +29,108 @@
 
 #include "PythonVariableConverter.h"
 
-Ipc::PVariable PythonVariableConverter::getVariable(PyObject* value)
-{
-    Ipc::PVariable variable;
-    if(!value) return variable;
+Ipc::PVariable PythonVariableConverter::getVariable(PyObject *value) {
+  Ipc::PVariable variable;
+  if (!value) return std::make_shared<Ipc::Variable>();
 
-    if(PyTuple_Check(value))
-    {
-        variable = std::make_shared<Ipc::Variable>(Ipc::VariableType::tArray);
-        Py_ssize_t tupleSize = PyTuple_Size(value);
-        variable->arrayValue->reserve(tupleSize);
-        for(int32_t i = 0; i < tupleSize; i++)
-        {
-            auto arrayElement = getVariable(PyTuple_GetItem(value, i));
-            if(arrayElement) variable->arrayValue->emplace_back(arrayElement);
-        }
+  if (PyTuple_Check(value)) {
+    variable = std::make_shared<Ipc::Variable>(Ipc::VariableType::tArray);
+    Py_ssize_t tupleSize = PyTuple_Size(value);
+    variable->arrayValue->reserve(tupleSize);
+    for (int32_t i = 0; i < tupleSize; i++) {
+      auto arrayElement = getVariable(PyTuple_GetItem(value, i));
+      if (arrayElement) variable->arrayValue->emplace_back(arrayElement);
     }
-    else if(PyList_Check(value))
-    {
-        variable = std::make_shared<Ipc::Variable>(Ipc::VariableType::tArray);
-        Py_ssize_t listSize = PyList_Size(value);
-        variable->arrayValue->reserve(listSize);
-        for(int32_t i = 0; i < listSize; i++)
-        {
-            auto arrayElement = getVariable(PyList_GetItem(value, i));
-            if(arrayElement) variable->arrayValue->emplace_back(arrayElement);
-        }
+  } else if (PyList_Check(value)) {
+    variable = std::make_shared<Ipc::Variable>(Ipc::VariableType::tArray);
+    Py_ssize_t listSize = PyList_Size(value);
+    variable->arrayValue->reserve(listSize);
+    for (int32_t i = 0; i < listSize; i++) {
+      auto arrayElement = getVariable(PyList_GetItem(value, i));
+      if (arrayElement) variable->arrayValue->emplace_back(arrayElement);
     }
-    else if(PyDict_Check(value))
-    {
-        variable = std::make_shared<Ipc::Variable>(Ipc::VariableType::tStruct);
-        PyObject* key = nullptr;
-        PyObject* dictElement = nullptr;
-        Py_ssize_t pos = 0;
-        while(PyDict_Next(value, &pos, &key, &dictElement))
-        {
-            if(!key || !dictElement) continue;
-            auto structKey = getVariable(key);
-            auto structElement = getVariable(dictElement);
-            if(structKey && structElement) variable->structValue->emplace(structKey->toString(), structElement);
-        }
+  } else if (PyDict_Check(value)) {
+    variable = std::make_shared<Ipc::Variable>(Ipc::VariableType::tStruct);
+    PyObject *key = nullptr;
+    PyObject *dictElement = nullptr;
+    Py_ssize_t pos = 0;
+    while (PyDict_Next(value, &pos, &key, &dictElement)) {
+      if (!key || !dictElement) continue;
+      auto structKey = getVariable(key);
+      auto structElement = getVariable(dictElement);
+      if (structKey && structElement) variable->structValue->emplace(structKey->toString(), structElement);
     }
-    else if(PyBool_Check(value)) variable = std::make_shared<Ipc::Variable>((bool)PyObject_IsTrue(value));
-    else if(PyLong_Check(value)) variable = std::make_shared<Ipc::Variable>((int64_t)PyLong_AsLongLong(value));
-    else if(PyFloat_Check(value)) variable = std::make_shared<Ipc::Variable>(PyFloat_AsDouble(value));
-    else if(PyUnicode_Check(value))
-    {
-        Py_ssize_t stringSize = 0;
-        const char* utf8String = PyUnicode_AsUTF8AndSize(value, &stringSize); //From the documentation: "The caller is not responsible for deallocating the buffer."
-        if(utf8String) variable = std::make_shared<Ipc::Variable>(std::string(utf8String, stringSize));
-        else variable = std::make_shared<Ipc::Variable>(Ipc::VariableType::tString);
-    }
-    else if(PyBytes_Check(value))
-    {
-        char* rawByteArray = PyBytes_AsString(value);
-        std::vector<char> byteArray;
-        if(rawByteArray) byteArray = std::vector<char>(rawByteArray, rawByteArray + PyBytes_Size(value));
-        variable = std::make_shared<Ipc::Variable>(byteArray);
-    }
-    else if(value == Py_None)
-    {
-        variable = std::make_shared<Ipc::Variable>(Ipc::VariableType::tVoid);
-    }
+  } else if (PyBool_Check(value)) variable = std::make_shared<Ipc::Variable>((bool)PyObject_IsTrue(value));
+  else if (PyLong_Check(value)) variable = std::make_shared<Ipc::Variable>((int64_t)PyLong_AsLongLong(value));
+  else if (PyFloat_Check(value)) variable = std::make_shared<Ipc::Variable>(PyFloat_AsDouble(value));
+  else if (PyUnicode_Check(value)) {
+    Py_ssize_t stringSize = 0;
+    const char *utf8String = PyUnicode_AsUTF8AndSize(value, &stringSize); //From the documentation: "The caller is not responsible for deallocating the buffer."
+    if (utf8String) variable = std::make_shared<Ipc::Variable>(std::string(utf8String, stringSize));
+    else variable = std::make_shared<Ipc::Variable>(Ipc::VariableType::tString);
+  } else if (PyBytes_Check(value)) {
+    char *rawByteArray = PyBytes_AsString(value);
+    std::vector<char> byteArray;
+    if (rawByteArray) byteArray = std::vector<char>(rawByteArray, rawByteArray + PyBytes_Size(value));
+    variable = std::make_shared<Ipc::Variable>(byteArray);
+  } else if (PyByteArray_Check(value)) {
+    char *rawByteArray = PyByteArray_AsString(value);
+    std::vector<char> byteArray;
+    if (rawByteArray) byteArray = std::vector<char>(rawByteArray, rawByteArray + PyByteArray_Size(value));
+    variable = std::make_shared<Ipc::Variable>(byteArray);
+  } else if (value == Py_None) {
+    variable = std::make_shared<Ipc::Variable>(Ipc::VariableType::tVoid);
+  } else {
+    variable = std::make_shared<Ipc::Variable>();
+  }
 
-    return variable;
+  return variable;
 }
 
-PyObject* PythonVariableConverter::getPythonVariable(const Ipc::PVariable& input)
-{
-    PyObject* output = nullptr;
-    if(!input) return output;
+PyObject *PythonVariableConverter::getPythonVariable(const Ipc::PVariable &input) {
+  PyObject *output = nullptr;
+  if (!input) return output;
 
-    if(input->type == Ipc::VariableType::tArray)
-    {
-        output = PyList_New(input->arrayValue->size());
-        for(int32_t i = 0; i < (int32_t)input->arrayValue->size(); i++)
-        {
-            auto value = getPythonVariable(input->arrayValue->at(i));
-            if(value == nullptr) continue;
-            PyList_SetItem(output, i, value);
-        }
+  if (input->type == Ipc::VariableType::tArray) {
+    output = PyList_New(input->arrayValue->size());
+    for (int32_t i = 0; i < (int32_t)input->arrayValue->size(); i++) {
+      auto value = getPythonVariable(input->arrayValue->at(i));
+      if (value == nullptr) continue;
+      PyList_SetItem(output, i, value);
     }
-    else if(input->type == Ipc::VariableType::tStruct)
-    {
-        output = PyDict_New();
-        for(auto& element : *input->structValue)
-        {
-            auto key = Py_BuildValue("s", element.first.c_str());
-            if(key == nullptr) continue;
-            auto value = getPythonVariable(element.second);
-            if(value == nullptr) continue;
-            PyDict_SetItem(output, key, value);
-        }
+  } else if (input->type == Ipc::VariableType::tStruct) {
+    output = PyDict_New();
+    for (auto &element : *input->structValue) {
+      auto key = Py_BuildValue("s", element.first.c_str());
+      if (key == nullptr) continue;
+      auto value = getPythonVariable(element.second);
+      if (value == nullptr) continue;
+      PyDict_SetItem(output, key, value);
     }
-    else if(input->type == Ipc::VariableType::tVoid)
-    {
-        Py_INCREF(Py_None);
-        output = Py_None;
+  } else if (input->type == Ipc::VariableType::tVoid) {
+    Py_INCREF(Py_None);
+    output = Py_None;
+  } else if (input->type == Ipc::VariableType::tBoolean) {
+    if (input->booleanValue) {
+      Py_INCREF(Py_True);
+      output = Py_True;
+    } else {
+      Py_INCREF(Py_False);
+      output = Py_False;
     }
-    else if(input->type == Ipc::VariableType::tBoolean)
-    {
-        if(input->booleanValue)
-        {
-            Py_INCREF(Py_True);
-            output = Py_True;
-        }
-        else
-        {
-            Py_INCREF(Py_False);
-            output = Py_False;
-        }
-    }
-    else if(input->type == Ipc::VariableType::tInteger)
-    {
-        output = Py_BuildValue("l", (long)input->integerValue);
-    }
-    else if(input->type == Ipc::VariableType::tInteger64)
-    {
-        output = Py_BuildValue("L", (long long)input->integerValue64);
-    }
-    else if(input->type == Ipc::VariableType::tFloat)
-    {
-        output = Py_BuildValue("d", input->floatValue);
-    }
-    else if(input->type == Ipc::VariableType::tString || input->type == Ipc::VariableType::tBase64)
-    {
-        output = Py_BuildValue("s", input->stringValue.c_str());
-    }
-    else if(input->type == Ipc::VariableType::tBinary)
-    {
-        output = Py_BuildValue("y*", (char*)input->binaryValue.data());
-    }
-    else
-    {
-        output = Py_BuildValue("s", "UNKNOWN");
-    }
-    return output;
+  } else if (input->type == Ipc::VariableType::tInteger) {
+    output = Py_BuildValue("l", (long)input->integerValue);
+  } else if (input->type == Ipc::VariableType::tInteger64) {
+    output = Py_BuildValue("L", (long long)input->integerValue64);
+  } else if (input->type == Ipc::VariableType::tFloat) {
+    output = Py_BuildValue("d", input->floatValue);
+  } else if (input->type == Ipc::VariableType::tString || input->type == Ipc::VariableType::tBase64) {
+    output = Py_BuildValue("s", input->stringValue.c_str());
+  } else if (input->type == Ipc::VariableType::tBinary) {
+    output = Py_BuildValue("y", (char *)input->binaryValue.data());
+  } else {
+    output = Py_BuildValue("s", "UNKNOWN");
+  }
+  return output;
 }
 
